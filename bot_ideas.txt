@@ -1,0 +1,17 @@
+
+- Better bot logging
+ 	- Logs when it goes online
+	- Logs when it adds roles and who it adds too
+	- Logs when and who it kicks 
+ 	- etc.
+
+ - Kick people on word list
+ 	- Source word list from a seperate file, bot auto updates based on command
+
+ - Auto add roles
+ 	- Role names are stored in a seperate file, bot auto updates based on command
+
+ - Kick command that starts a vote on whether someone should be kicked 
+ 	- If the vote reaches three people, person will be kicked from the server
+ 	- Silence option that doesn't kick the user, but server mutes/chat mutes them for 10 minutes, optional to change the time 
+

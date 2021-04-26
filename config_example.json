@@ -1,0 +1,21 @@
+{
+
+  "moderation": {
+
+    "kick_words_file": "cogs/kickable_words.txt",
+    "kick_message": "I kicked a member"
+
+  },
+
+  "roles":{
+
+    "mod_list": [
+      000000000000000000
+    ],
+
+    "mod_role": "mod role",
+    "normal_role": "standard role"
+
+  }
+
+}
