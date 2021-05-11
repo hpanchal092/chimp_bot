@@ -6,6 +6,7 @@ import json
 class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.kick_words_file = ""
         self.read_config.start()
         self.update_kick_words.start()
         self.config_file = "config.json"
@@ -23,6 +24,9 @@ class Moderation(commands.Cog):
         with open(self.kick_words_file) as f:
             self.kickable_words = f.read().splitlines()
 
+    @commands.command()
+    async def showwords(self, ctx):
+        await ctx.send(str(self.kickable_words))
 
     def cog_unload(self):
         self.update_kick_words.cancel()
