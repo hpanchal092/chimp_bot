@@ -1,0 +1,4 @@
+Put banned words here seperated by linebreaks
+Fudge
+Ship
+Beach
