@@ -3,7 +3,8 @@
   "moderation": {
 
     "kick_words_file": "cogs/kickable_words.txt",
-    "kick_message": "I kicked a member"
+    "kick_message": "I kicked a member",
+    "votekick_requirement": 3
 
   },
 

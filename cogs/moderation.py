@@ -7,6 +7,7 @@ class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.kick_words_file = ""
+        self.votekick_requirement = None
         self.read_config.start()
         self.update_kick_words.start()
         self.config_file = "config.json"
@@ -18,6 +19,7 @@ class Moderation(commands.Cog):
             moderation = loaded_file["moderation"]
             self.kick_words_file = moderation["kick_words_file"]
             self.kick_message = moderation["kick_message"]
+            self.votekick_requirement = moderation["votekick_requirement"]
 
     @tasks.loop(minutes=5.0)
     async def update_kick_words(self):
@@ -89,7 +91,7 @@ class Moderation(commands.Cog):
                 await ctx.send(f"Insufficient votes after 30 seconds, {member} was not kicked")
                 return
             else:
-                if reaction.count > 3:
+                if reaction.count > self.votekick_requirement:
                     try:
                         await member.kick(reason="Votekicked")
                         print(f"Kicking user {member} due to votekick")
