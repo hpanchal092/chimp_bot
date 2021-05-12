@@ -80,7 +80,6 @@ class Moderation(commands.Cog):
         msg = await ctx.send(f"Kick user {member}?")
         await msg.add_reaction('✅')
 
-        votes = 0
         while True:
             def check(reaction, user):
                 return user != self.bot.user and str(reaction.emoji) == '✅'
@@ -90,8 +89,7 @@ class Moderation(commands.Cog):
                 await ctx.send(f"Insufficient votes after 30 seconds, {member} was not kicked")
                 return
             else:
-                votes += 1
-                if votes == 3:
+                if reaction.count > 3:
                     try:
                         await member.kick(reason="Votekicked")
                         print(f"Kicking user {member} due to votekick")
