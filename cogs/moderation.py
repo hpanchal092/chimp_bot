@@ -96,6 +96,7 @@ class Moderation(commands.Cog):
                         await member.kick(reason="Votekicked")
                         print(f"Kicking user {member} due to votekick")
                         await ctx.send(f"Kicking user {member}")
+                        await ctx.send(self.kick_message)
                         return
                     except discord.Forbidden:
                         await ctx.send(f"Insufficent permissions to kick {member}")
