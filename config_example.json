@@ -10,7 +10,7 @@
   "roles":{
 
     "mod_list": [
-      000000000000000000
+      // Put discord user ids seperated by a comma here
     ],
 
     "mod_role": "mod role",
