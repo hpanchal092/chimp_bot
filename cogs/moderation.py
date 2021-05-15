@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands, tasks
 import asyncio
-import json
+import loadconfig
 
 class Moderation(commands.Cog):
     def __init__(self, bot):
@@ -10,16 +10,13 @@ class Moderation(commands.Cog):
         self.votekick_requirement = None
         self.read_config.start()
         self.update_kick_words.start()
-        self.config_file = "config.json"
 
     @tasks.loop(minutes=5.0)
     async def read_config(self):
-        with open(self.config_file) as config_file:
-            loaded_file = json.load(config_file)
-            moderation = loaded_file["moderation"]
-            self.kick_words_file = moderation["kick_words_file"]
-            self.kick_message = moderation["kick_message"]
-            self.votekick_requirement = moderation["votekick_requirement"]
+        config = loadconfig.read("moderation")
+        self.kick_words_file = config["kick_words_file"]
+        self.kick_message = config["kick_message"]
+        self.votekick_requirement = config["votekick_requirement"]
 
     @tasks.loop(minutes=5.0)
     async def update_kick_words(self):

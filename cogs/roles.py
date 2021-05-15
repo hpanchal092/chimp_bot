@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands, tasks
 import asyncio
-import json
+import loadconfig
 
 class Roles(commands.Cog):
     def __init__(self, bot):
@@ -11,12 +11,10 @@ class Roles(commands.Cog):
 
     @tasks.loop(minutes=5.0)
     async def read_config(self):
-        with open(self.config_file) as config_file:
-            loaded_file = json.load(config_file)
-            roles = loaded_file["roles"]
-            self.mod_list = roles["mod_list"]
-            self.mod_role = roles["mod_role"]
-            self.normal_role = roles["normal_role"]
+        config = loadconfig.read("roles")
+        self.mod_list = config["mod_list"]
+        self.mod_role = config["mod_role"]
+        self.normal_role = config["normal_role"]
 
     def cog_unload(self):
         self.read_config.cancel()
