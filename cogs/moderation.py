@@ -81,7 +81,7 @@ class Moderation(commands.Cog):
 
         while True:
             def check(reaction, user):
-                return user != self.bot.user and str(reaction.emoji) == '✅'
+                return user != self.bot.user and str(reaction.emoji) == '✅' and reaction.message == msg
             try:
                 reaction, user = await self.bot.wait_for('reaction_add', timeout=30, check=check)
             except asyncio.TimeoutError:
