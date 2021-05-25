@@ -68,6 +68,11 @@ class Moderation(commands.Cog):
                     print(f"Kicked user {after.author} for editing message {before.content} to {after.content}")
                 except discord.Forbidden:
                     print(f"Insufficent Permissions to kick {message.author}")
+    @commands.Cog.listener()
+    async def on_command_error(self, ctx, error):
+        if isinstance(error, commands.MaxConcurrencyReached):
+            await ctx.channel.send("BE PATIENT YOU PRICK")
+            return
 
     @commands.command()
     @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
