@@ -22,4 +22,4 @@ async def on_ready():
     now = datetime.now()
     print("Bot is online at", now)
 
-bot.run(secret.TOKEN)
+bot.run(secret.TOKEN, reconnect=True)
