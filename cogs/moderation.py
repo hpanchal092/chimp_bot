@@ -23,7 +23,8 @@ class Moderation(commands.Cog):
         with open(self.kick_words_file) as f:
             self.kickable_words = f.read().splitlines()
 
-    @commands.command()
+    @commands.command(hidden=True)
+    @commands.is_owner()
     async def showwords(self, ctx):
         await ctx.send(str(self.kickable_words))
 
