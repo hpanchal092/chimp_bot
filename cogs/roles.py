@@ -2,12 +2,14 @@ import discord
 from discord.ext import commands, tasks
 import asyncio
 import loadconfig
+import logging
 
 class Roles(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.read_config.start()
         self.config_file = "config.json"
+        logging.basicConfig(filename="bot.log", level=logging.INFO)
 
     @tasks.loop(minutes=5.0)
     async def read_config(self):
@@ -26,7 +28,7 @@ class Roles(commands.Cog):
         else:
             rank = discord.utils.get(member.guild.roles, name=self.normal_role)
         await member.add_roles(rank)
-        print(f"{member} was given the {rank} role.")
+        logging.info(f"{member} was given the {rank} role.")
 
 def setup(bot):
     bot.add_cog(Roles(bot))
