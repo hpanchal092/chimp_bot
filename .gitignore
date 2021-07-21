@@ -1,5 +1,8 @@
 __pycache__/
 venv/
+
 secret.py
 config.json
 kickable_words.txt
+
+*.log

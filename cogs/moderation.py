@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands, tasks
 import asyncio
 import loadconfig
+import logging
 
 class Moderation(commands.Cog):
     def __init__(self, bot):
@@ -10,6 +11,7 @@ class Moderation(commands.Cog):
         self.votekick_requirement = None
         self.read_config.start()
         self.update_kick_words.start()
+        logging.basicConfig(filename="bot.log", level=logging.INFO)
 
     @tasks.loop(minutes=5.0)
     async def read_config(self):
@@ -37,6 +39,11 @@ class Moderation(commands.Cog):
         self.update_kick_words.restart()
         await ctx.send("Updated kickable words")
 
+    @commands.command()
+    async def test(self, ctx):
+        logging.info("THIS IS A TEST MESSAGE")
+        await ctx.send("test")
+
     def check_word(self, word_list: list, text: str):
         lst = []
         for word in word_list:
@@ -53,9 +60,9 @@ class Moderation(commands.Cog):
                     await message.author.kick(reason=f"Sent the word {word}")
                     channel = message.channel
                     await channel.send(self.kick_message)
-                    print(f"Kicked user {message.author} for sending {word}")
+                    logging.info(f"Kicked user {message.author} for sending {word}")
                 except discord.Forbidden:
-                    print(f"Insufficent Permissions to kick {message.author}")
+                    logging.info(f"Insufficent Permissions to kick {message.author}")
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
@@ -66,9 +73,9 @@ class Moderation(commands.Cog):
                     await after.author.kick(reason=f"Sent the word {word},")
                     channel = after.channel
                     await channel.send(self.kick_message)
-                    print(f"Kicked user {after.author} for editing message {before.content} to {after.content}")
+                    logging.info(f"Kicked user {after.author} for editing message {before.content} to {after.content}")
                 except discord.Forbidden:
-                    print(f"Insufficent Permissions to kick {message.author}")
+                    logging.info(f"Insufficent Permissions to kick {message.author}")
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.MaxConcurrencyReached):
@@ -98,13 +105,13 @@ class Moderation(commands.Cog):
                 if reaction.count > self.votekick_requirement:
                     try:
                         await member.kick(reason="Votekicked")
-                        print(f"Kicking user {member} due to votekick")
+                        logging.info(f"Kicking user {member} due to votekick")
                         await ctx.send(f"Kicking user {member}")
                         await ctx.send(self.kick_message)
                         return
                     except discord.Forbidden:
                         await ctx.send(f"Insufficent permissions to kick {member}")
-                        print(f"Insufficent permissions to kick {member}")
+                        logging.info(f"Insufficent permissions to kick {member}")
                         return
 
 def setup(bot):
