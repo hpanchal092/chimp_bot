@@ -2,9 +2,11 @@ import discord
 from discord.ext import commands
 from datetime import datetime
 import secret
+import logging
 
 intents = discord.Intents.default()
 intents.members = True
+logging.basicConfig(filename="bot.log", level=logging.INFO)
 
 bot = commands.Bot(command_prefix="-c ", intents=intents)
 
@@ -20,6 +22,6 @@ if __name__ == '__main__':
 @bot.event
 async def on_ready():
     now = datetime.now()
-    print("Bot is online at", now)
+    logging.info(f"Bot is online at {now}")
 
 bot.run(secret.TOKEN, reconnect=True)
