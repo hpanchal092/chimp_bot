@@ -1,4 +1,5 @@
 Put banned words here seperated by linebreaks
-Fudge
-Ship
-Beach
+Make sure the words are lowercase
+fudge
+ship
+beach
