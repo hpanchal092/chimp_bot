@@ -84,7 +84,7 @@ class Moderation(commands.Cog):
 
     @commands.command()
     @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
-    @commands.cooldown(1, 600, commands.BucketType.user)
+    @commands.cooldown(1, 180, commands.BucketType.user)
     async def votekick(self, ctx, member: discord.Member = None):
         if not member:
             await ctx.send("Please specify a member")
