@@ -13,7 +13,8 @@ bot = commands.Bot(command_prefix="-c ", intents=intents)
 initial_extensions = ["cogs.basecommands",
                       "cogs.roles",
                       "cogs.moderation",
-                      "cogs.owner"]
+                      "cogs.owner",
+                      "cogs.nnn"]
 
 if __name__ == '__main__':
     for extension in initial_extensions:
