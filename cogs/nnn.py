@@ -6,13 +6,19 @@ import datetime
 class NoNutNovember(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.current_nnn_msg = None
         self.failed_list = []
         self.passed_list = []
-        self.TASK_LOOP = 24.0
-        self.TASK_LOOP_SEC = self.TASK_LOOP * 60 * 60
 
     @tasks.loop(hours=24.0)
     async def send_nnn_query(self):
+        members = self.nnn_channel.guild.members
+        for user in members:
+            if user not in self.passed_list:
+                self.failed_list.append(f"<@!{user.id}> ")
+
+        self.passed_list = []
+
         embed=discord.Embed(title="Daily NNN Query", color=0xff0059)
         embed.add_field(name="Today is", value=f"{datetime.date.today()}")
         embed.add_field(name=f"Did you 🥜 yesterday?", value="Yes or No?")
@@ -24,28 +30,15 @@ class NoNutNovember(commands.Cog):
             user += "\n"
         await self.nnn_channel.send(f"@everyone, Everyone who failed so far: \n\n {acc}")
         msg = await self.nnn_channel.send(embed=embed)
+        for reaction in ("❎", "✅"):
+            await msg.add_reaction(reaction)
 
-        query = asyncio.create_task(self.query(msg))
-        await asyncio.sleep(self.TASK_LOOP_SEC)
-        query.cancel()
+        self.current_nnn_msg = msg
 
-        guild = self.nnn_channel.guild
-        for user in guild.members:
-            if user not in self.passed_list:
-                self.failed_list.append(user)
-        return
-
-    async def query(self, msg):
-        for emoji in ("❎", "✅"):
-            await msg.add_reaction(emoji)
-
-        while True:
-            def check(reaction, user):
-                return str(reaction.emoji) in ("❎", "✅") and reaction.message == msg and user != self.bot.user
-
-            while True:
-                reaction, user = await self.bot.wait_for("reaction_add", check=check)
-
+    @commands.Cog.listener()
+    async def on_reaction_add(self, reaction, user):
+        if reaction.message == self.current_nnn_msg:
+            if str(reaction.emoji) in ("❎", "✅") and user != self.bot.user:
                 # if you passed
                 if str(reaction.emoji) == "❎":
                     self.passed_list.append(user)
@@ -56,26 +49,26 @@ class NoNutNovember(commands.Cog):
 
     async def confirm(self, user):
         # sends confirmation message
-        conf_msg = await self.nnn_channel.send(f"<@!{user.id}>, are you sure you failed No Nut November??")
-        await conf_msg.add_reaction("✅")
+        msg = await self.nnn_channel.send(f"<@!{user.id}>, are you sure you failed No Nut November??")
+        await msg.add_reaction("✅")
 
         while True:
-            def check(conf_reaction, conf_user):
-                return conf_reaction.message == conf_msg and user == conf_user and str(conf_reaction.emoji) == "✅"
+            def check(reaction, conf_user):
+                return reaction.message == msg and conf_user == user and str(reaction.emoji) == "✅"
             try:
-                conf_reaction, conf_user = await self.bot.wait_for('reaction_add', timeout=30.0, check=check)
+                reaction, conf_user = await self.bot.wait_for('reaction_add', timeout=30.0, check=check)
             except asyncio.TimeoutError:
                 await self.nnn_channel.send("Timed out, assuming you did not fail")
                 return
             else:
-                self.failed_list.append(f"<@!{str(user.id)}>")
+                self.failed_list.append(f"<@!{user.id}> ")
                 await self.nnn_channel.send("You have permanently failed No Nut November")
                 return
 
-
     @commands.command()
-    async def debug(self, ctx):
+    async def send_failed_list(self, ctx):
         await ctx.send(f"Failed: {self.failed_list}")
+        await ctx.send(f"Passed: {self.passed_list}")
 
     @commands.command(hidden=True)
     @commands.is_owner()
@@ -86,9 +79,9 @@ class NoNutNovember(commands.Cog):
     @commands.command(hidden=True)
     @commands.is_owner()
     async def start_nnn_query(self, ctx):
-        self.send_nnn_query.stop()
-        self.send_nnn_query.start()
         self.nnn_channel = discord.utils.get(ctx.guild.channels, name="nnn")
+        self.passed_list = ctx.guild.members
+        self.send_nnn_query.start()
 
 def setup(bot):
     bot.add_cog(NoNutNovember(bot))
