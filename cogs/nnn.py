@@ -79,7 +79,8 @@ class NoNutNovember(commands.Cog):
     @commands.is_owner()
     async def start_nnn_query(self, ctx):
         self.nnn_channel = discord.utils.get(ctx.guild.channels, name="nnn")
-        self.passed_list = ctx.guild.members
+        for member in ctx.guild.members:
+            self.passed_list.add(member.id)
         self.send_nnn_query.start()
 
 def setup(bot):
