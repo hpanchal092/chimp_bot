@@ -7,15 +7,15 @@ class NoNutNovember(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.current_nnn_msg = None
-        self.failed_list = []
-        self.passed_list = []
+        self.failed_list = set()
+        self.passed_list = set()
 
     @tasks.loop(hours=24.0)
     async def send_nnn_query(self):
         members = self.nnn_channel.guild.members
         for user in members:
-            if user not in self.passed_list:
-                self.failed_list.append(f"<@!{user.id}> ")
+            if user.id not in self.passed_list:
+                self.failed_list.add(f"<@!{user.id}> ")
 
         self.passed_list = []
 
@@ -41,7 +41,7 @@ class NoNutNovember(commands.Cog):
             if str(reaction.emoji) in ("❎", "✅") and user != self.bot.user:
                 # if you passed
                 if str(reaction.emoji) == "❎":
-                    self.passed_list.append(user)
+                    self.passed_list.add(user.id)
 
                 # if you clicked that you failed
                 elif str(reaction.emoji) == "✅":
@@ -61,14 +61,13 @@ class NoNutNovember(commands.Cog):
                 await self.nnn_channel.send("Timed out, assuming you did not fail")
                 return
             else:
-                self.failed_list.append(f"<@!{user.id}> ")
+                self.failed_list.add(f"<@!{user.id}> ")
                 await self.nnn_channel.send("You have permanently failed No Nut November")
                 return
 
     @commands.command()
     async def send_failed_list(self, ctx):
         await ctx.send(f"Failed: {self.failed_list}")
-        await ctx.send(f"Passed: {self.passed_list}")
 
     @commands.command(hidden=True)
     @commands.is_owner()
