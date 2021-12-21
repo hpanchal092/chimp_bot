@@ -75,7 +75,7 @@ class Moderation(commands.Cog):
                     await channel.send(self.kick_message)
                     logging.info(f"Kicked user {after.author} for editing message {before.content} to {after.content}")
                 except discord.Forbidden:
-                    logging.info(f"Insufficent Permissions to kick {message.author}")
+                    logging.info(f"Insufficent Permissions to kick {after.author}")
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.MaxConcurrencyReached):
@@ -97,7 +97,7 @@ class Moderation(commands.Cog):
             def check(reaction, user):
                 return user != self.bot.user and str(reaction.emoji) == '✅' and reaction.message == msg
             try:
-                reaction, user = await self.bot.wait_for('reaction_add', timeout=30, check=check)
+                reaction = await self.bot.wait_for('reaction_add', timeout=30, check=check)
             except asyncio.TimeoutError:
                 await ctx.send(f"Insufficient votes after 30 seconds, {member} was not kicked")
                 return
