@@ -3,6 +3,7 @@ from discord.ext import commands, tasks
 import asyncio
 import loadconfig
 import logging
+from datetime import timedelta
 
 class Moderation(commands.Cog):
     def __init__(self, bot):
@@ -39,11 +40,6 @@ class Moderation(commands.Cog):
         self.update_kick_words.restart()
         await ctx.send("Updated kickable words")
 
-    @commands.command()
-    async def test(self, ctx):
-        logging.info("THIS IS A TEST MESSAGE")
-        await ctx.send("test")
-
     def check_word(self, word_list: list, text: str):
         lst = []
         for word in word_list:
@@ -76,11 +72,45 @@ class Moderation(commands.Cog):
                     logging.info(f"Kicked user {after.author} for editing message {before.content} to {after.content}")
                 except discord.Forbidden:
                     logging.info(f"Insufficent Permissions to kick {after.author}")
+
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.MaxConcurrencyReached):
             await ctx.channel.send("BE PATIENT YOU PRICK")
             return
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.send("YOU JUST TRIED TO USE THAT COMMAND, DON'T YOU HAVE SOME PATIENCE?")
+            return
+
+    @commands.command()
+    async def silence(self, ctx, member: discord.Member=None):
+        if not member:
+            await ctx.send("Please specify a member")
+            return
+
+        msg = await ctx.send(f"Timeout user {member} for 60 seconds?")
+        await msg.add_reaction('✅')
+
+        while True:
+            def check(reaction, user):
+                return user != self.bot.user and str(reaction.emoji) == '✅' and reaction.message == msg
+            try:
+                reaction, _ = await self.bot.wait_for('reaction_add', timeout=30, check=check)
+            except asyncio.TimeoutError:
+                await ctx.send(f"Insufficient votes after 30 seconds, {member} was not timed out")
+                return
+            else:
+                if reaction.count > self.votekick_requirement:
+                    try:
+                        time = discord.utils.utcnow() + timedelta(minutes=1)
+                        await member.timeout(time)
+                        logging.info(f"Silencing user {member}")
+                        await ctx.send(f"Silencing user {member}")
+                        return
+                    except discord.Forbidden:
+                        await ctx.send(f"Insufficent permissions to silence {member}")
+                        logging.info(f"Insufficent permissions to silence {member}")
+                        return
 
     @commands.command()
     @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
@@ -97,11 +127,12 @@ class Moderation(commands.Cog):
             def check(reaction, user):
                 return user != self.bot.user and str(reaction.emoji) == '✅' and reaction.message == msg
             try:
-                reaction = await self.bot.wait_for('reaction_add', timeout=30, check=check)
+                reaction, _ = await self.bot.wait_for('reaction_add', timeout=30, check=check)
             except asyncio.TimeoutError:
                 await ctx.send(f"Insufficient votes after 30 seconds, {member} was not kicked")
                 return
             else:
+                print(reaction.count)
                 if reaction.count > self.votekick_requirement:
                     try:
                         await member.kick(reason="Votekicked")
