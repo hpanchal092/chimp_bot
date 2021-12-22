@@ -82,6 +82,8 @@ class Moderation(commands.Cog):
             await ctx.send("YOU JUST TRIED TO USE THAT COMMAND, DON'T YOU HAVE SOME PATIENCE?")
             return
 
+    @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
+    @commands.cooldown(1, 180, commands.BucketType.user)
     @commands.command()
     async def silence(self, ctx, member: discord.Member=None):
         if not member:
