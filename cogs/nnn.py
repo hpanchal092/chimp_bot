@@ -11,7 +11,7 @@ class NoNutNovember(commands.Cog):
         self.not_failed_list = set()
         self.counter = 0
 
-    @tasks.loop(minutes=1.0)  # change to 24 hours
+    @tasks.loop(hours=24.0)
     async def send_nnn_query(self):
         members = self.nnn_channel.guild.members
         for user in members:
