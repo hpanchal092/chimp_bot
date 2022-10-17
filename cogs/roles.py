@@ -7,9 +7,13 @@ import logging
 class Roles(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.read_config.start()
         self.config_file = "config.json"
         logging.basicConfig(filename="bot.log", level=logging.INFO)
+
+    @commands.command(hidden=True)
+    @commands.is_owner()
+    async def otherforcestart(self, ctx):
+        self.read_config.start()
 
     @tasks.loop(minutes=5.0)
     async def read_config(self):
@@ -20,6 +24,9 @@ class Roles(commands.Cog):
 
     def cog_unload(self):
         self.read_config.cancel()
+
+    def cog_load(self):
+        self.read_config.start()
 
     @commands.Cog.listener()
     async def on_member_join(self, member):

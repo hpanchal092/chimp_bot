@@ -10,9 +10,8 @@ class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.kick_words_file = ""
-        self.votekick_requirement = None
-        self.read_config.start()
-        self.update_kick_words.start()
+        self.kickable_words = []
+        self.votekick_requirement = 2
         logging.basicConfig(filename="bot.log", level=logging.INFO)
 
     @tasks.loop(minutes=5.0)
@@ -32,9 +31,19 @@ class Moderation(commands.Cog):
     async def showwords(self, ctx):
         await ctx.send(str(self.kickable_words))
 
+    def cog_load(self):
+        self.update_kick_words.start()
+        self.read_config.start()
+
     def cog_unload(self):
         self.update_kick_words.cancel()
         self.read_config.cancel()
+
+    @commands.command(hidden=True)
+    @commands.is_owner()
+    async def forcestart(self, ctx):
+        self.read_config.start()
+        self.update_kick_words.start()
 
     @commands.command()
     async def updatewords(self, ctx):
