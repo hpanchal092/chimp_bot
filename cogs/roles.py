@@ -1,8 +1,8 @@
 import discord
 from discord.ext import commands, tasks
-import asyncio
 import loadconfig
 import logging
+
 
 class Roles(commands.Cog):
     def __init__(self, bot):
@@ -30,5 +30,6 @@ class Roles(commands.Cog):
         await member.add_roles(rank)
         logging.info(f"{member} was given the {rank} role.")
 
-def setup(bot):
-    bot.add_cog(Roles(bot))
+
+async def setup(bot):
+    await bot.add_cog(Roles(bot))

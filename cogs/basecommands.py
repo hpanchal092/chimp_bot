@@ -1,6 +1,5 @@
-import discord
 from discord.ext import commands
-import asyncio
+
 
 class BaseCommands(commands.Cog):
     def __init__(self, bot):
@@ -14,6 +13,6 @@ class BaseCommands(commands.Cog):
     async def echo(self, ctx, *, arg):
         await ctx.send(arg)
 
-def setup(bot):
-    bot.add_cog(BaseCommands(bot))
 
+async def setup(bot):
+    await bot.add_cog(BaseCommands(bot))

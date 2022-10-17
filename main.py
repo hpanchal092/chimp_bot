@@ -1,28 +1,35 @@
 import discord
 from discord.ext import commands
 from datetime import datetime
+import asyncio
 import secret
 import logging
 
-intents = discord.Intents.default()
+intents = discord.Intents.all()
 intents.members = True
 logging.basicConfig(filename="bot.log", level=logging.INFO)
 
-bot = commands.Bot(command_prefix="-c ", intents=intents)
+client = commands.Bot(command_prefix="+c ", intents=intents)
 
-initial_extensions = ["cogs.basecommands",
-                      "cogs.roles",
-                      "cogs.moderation",
-                      "cogs.owner",
-                      "cogs.nnn"]
+initial_extensions = [
+    "cogs.basecommands",
+    "cogs.roles",
+    "cogs.moderation",
+    "cogs.owner",
+]
+
+
+async def load():
+    for extension in initial_extensions:
+        await client.load_extension(extension)
 
 if __name__ == '__main__':
-    for extension in initial_extensions:
-        bot.load_extension(extension)
+    asyncio.run(load())
 
-@bot.event
+
+@client.event
 async def on_ready():
     now = datetime.now()
     logging.info(f"Bot is online at {now}")
 
-bot.run(secret.TOKEN, reconnect=True)
+client.run(secret.TOKEN, reconnect=True)

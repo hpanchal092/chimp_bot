@@ -5,6 +5,7 @@ import loadconfig
 import logging
 from datetime import timedelta
 
+
 class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -56,9 +57,11 @@ class Moderation(commands.Cog):
                     await message.author.kick(reason=f"Sent the word {word}")
                     channel = message.channel
                     await channel.send(self.kick_message)
-                    logging.info(f"Kicked user {message.author} for sending {word}")
+                    logging.info(
+                        f"Kicked user {message.author} for sending {word}")
                 except discord.Forbidden:
-                    logging.info(f"Insufficent Permissions to kick {message.author}")
+                    logging.info(
+                        f"Insufficent Permissions to kick {message.author}")
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
@@ -69,9 +72,11 @@ class Moderation(commands.Cog):
                     await after.author.kick(reason=f"Sent the word {word},")
                     channel = after.channel
                     await channel.send(self.kick_message)
-                    logging.info(f"Kicked user {after.author} for editing message {before.content} to {after.content}")
+                    logging.info(
+                        f"Kicked user {after.author} for editing message {before.content} to {after.content}")
                 except discord.Forbidden:
-                    logging.info(f"Insufficent Permissions to kick {after.author}")
+                    logging.info(
+                        f"Insufficent Permissions to kick {after.author}")
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
@@ -85,7 +90,7 @@ class Moderation(commands.Cog):
     @commands.max_concurrency(1, per=commands.BucketType.default, wait=False)
     @commands.cooldown(1, 180, commands.BucketType.user)
     @commands.command()
-    async def silence(self, ctx, member: discord.Member=None):
+    async def silence(self, ctx, member: discord.Member = None):
         if not member:
             await ctx.send("Please specify a member")
             return
@@ -111,7 +116,8 @@ class Moderation(commands.Cog):
                         return
                     except discord.Forbidden:
                         await ctx.send(f"Insufficent permissions to silence {member}")
-                        logging.info(f"Insufficent permissions to silence {member}")
+                        logging.info(
+                            f"Insufficent permissions to silence {member}")
                         return
 
     @commands.command()
@@ -144,8 +150,10 @@ class Moderation(commands.Cog):
                         return
                     except discord.Forbidden:
                         await ctx.send(f"Insufficent permissions to kick {member}")
-                        logging.info(f"Insufficent permissions to kick {member}")
+                        logging.info(
+                            f"Insufficent permissions to kick {member}")
                         return
 
-def setup(bot):
-    bot.add_cog(Moderation(bot))
+
+async def setup(bot):
+    await bot.add_cog(Moderation(bot))
