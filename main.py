@@ -9,7 +9,7 @@ intents = discord.Intents.all()
 intents.members = True
 logging.basicConfig(filename="bot.log", level=logging.INFO)
 
-client = commands.Bot(command_prefix="+c ", intents=intents)
+client = commands.Bot(command_prefix="-c ", intents=intents)
 
 initial_extensions = [
     "cogs.basecommands",
