@@ -45,7 +45,8 @@ class NoNutNovember(commands.Cog):
 
         async def fail(interaction: discord.Interaction):
             user = interaction.user
-            self.not_failed_list.remove(user)
+            if user in self.not_failed_list:
+                self.not_failed_list.remove(user)
             self.failed_list.add(user)
             await interaction.response.send_message(
                 "Marking you as PERMANENTLY failed",
@@ -91,7 +92,7 @@ class NoNutNovember(commands.Cog):
     async def send_failed_list(self, ctx):
         acc = ""
         for user in self.failed_list:
-            acc += f"<@!{user.display_name}>, "
+            acc += f"{user.display_name}, "
         await ctx.send(f"Failed: {acc}")
 
     @commands.command(hidden=True)
